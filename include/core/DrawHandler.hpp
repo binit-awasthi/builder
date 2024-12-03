@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "components/Wire.hpp"
-#include "components/ElementalWire.hpp"
 
 class DrawHandler
 {

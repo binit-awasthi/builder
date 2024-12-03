@@ -3,7 +3,8 @@
 App::App()
 {
     settings.antialiasingLevel = 8;
-    window = new sf::RenderWindow(sf::VideoMode(800, 600), "SFML Project", sf::Style::None, settings);
+    window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "builder", sf::Style::Fullscreen, settings);
+
     window->setFramerateLimit(60);
     loadAssets();
 }
@@ -15,7 +16,7 @@ void App::run()
     while (window->isOpen())
     {
         processEvents(eventHandler);
-        update();
+        update(eventHandler);
         render();
     }
 }
@@ -41,8 +42,13 @@ void App::processEvents(EventHandler &eventHandler)
     }
 }
 
-void App::update()
+void App::update(EventHandler &eventHandler)
 {
+    if (eventHandler.isDragging)
+    {
+        sf::Vector2i mouseGridPos = sim::snapToGrid(sf::Mouse::getPosition(*window));
+        eventHandler.wire->updatePosition(mouseGridPos);
+    }
 }
 
 void App::loadAssets()

@@ -5,8 +5,7 @@
 #include <iostream>
 #include "utils/utils.hpp"
 #include "core/DrawHandler.hpp"
-// #include "components/Wire.hpp"
-#include "components/ElementalWire.hpp"
+#include "components/Wire.hpp"
 
 class EventHandler
 {
@@ -16,11 +15,13 @@ class EventHandler
     void handleKeyPressEvents(sf::Event);
     void handleKeyReleaseEvents(sf::Event);
     void handleMouseMoveEvents(sf::Event);
-    ElementalWire *wire;
-    bool mouseMoved = false;
+
     sf::Clock clock;
+    sf::Vector2i start;
 
 public:
+    Wire *wire;
+    bool isDragging;
     EventHandler(sf::RenderWindow &);
     void handleEvents(sf::Event);
 };

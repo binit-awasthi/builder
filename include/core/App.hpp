@@ -11,7 +11,7 @@ class App
 private:
     sf::RenderWindow *window;
     void processEvents(EventHandler &);
-    void update();
+    void update(EventHandler &);
     void render();
     void draw();
     void loadAssets();

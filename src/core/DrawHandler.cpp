@@ -9,11 +9,11 @@ DrawHandler::DrawHandler()
 
 void DrawHandler::draw(sf::RenderWindow &window)
 {
-
     for (auto item : itemsToDraw)
     {
         window.draw(*item);
     }
+    
 }
 
 DrawHandler::~DrawHandler()
