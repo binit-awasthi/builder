@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <memory>
 #include "components/Wire.hpp"
 
 class DrawHandler
@@ -11,10 +12,9 @@ private:
     int count;
 
 public:
-    DrawHandler();
-    ~DrawHandler();
     void draw(sf::RenderWindow &);
-    static std::vector<sf::Drawable *> itemsToDraw;
+    static std::vector<std::shared_ptr<sf::Drawable>> itemsToDraw;
+    static std::shared_ptr<sf::Drawable> itemToDraw ;
 };
 
 #endif

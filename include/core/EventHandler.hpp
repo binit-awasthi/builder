@@ -10,17 +10,19 @@
 class EventHandler
 {
     sf::RenderWindow &window;
-    void handleMousePressEvents(sf::Event);
-    void handleMouseReleaseEvents(sf::Event);
     void handleKeyPressEvents(sf::Event);
     void handleKeyReleaseEvents(sf::Event);
     void handleMouseMoveEvents(sf::Event);
 
-    sf::Clock clock;
+    //
+    void handleMousePressEvents(const sf::Event &event);
+    void handleMouseReleaseEvents(const sf::Event &event);
+    //
+
     sf::Vector2i start;
 
 public:
-    Wire *wire;
+    std::shared_ptr<Wire> wire = nullptr;
     bool isDragging;
     EventHandler(sf::RenderWindow &);
     void handleEvents(sf::Event);

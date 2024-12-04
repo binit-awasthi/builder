@@ -5,11 +5,13 @@
 #include "core/EventHandler.hpp"
 #include "core/DrawHandler.hpp"
 #include "utils/utils.hpp"
+#include <memory>
 
 class App
 {
 private:
-    sf::RenderWindow *window;
+    std::unique_ptr<sf::RenderWindow> window;
+
     void processEvents(EventHandler &);
     void update(EventHandler &);
     void render();

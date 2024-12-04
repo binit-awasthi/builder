@@ -3,8 +3,9 @@
 App::App()
 {
     settings.antialiasingLevel = 8;
-    window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "builder", sf::Style::Fullscreen, settings);
-
+    // window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "builder", sf::Style::Fullscreen, settings);
+    // window = new sf::RenderWindow(sf::VideoMode(500, 500), "builder", sf::Style::None, settings);
+    window = std::make_unique<sf::RenderWindow>(sf::VideoMode(500, 500), "builder", sf::Style::None, settings);
     window->setFramerateLimit(60);
     loadAssets();
 }
@@ -46,9 +47,15 @@ void App::update(EventHandler &eventHandler)
 {
     if (eventHandler.isDragging)
     {
-        sf::Vector2i mouseGridPos = sim::snapToGrid(sf::Mouse::getPosition(*window));
-        eventHandler.wire->updatePosition(mouseGridPos);
+        if (eventHandler.wire)
+        {
+            sf::Vector2i mouseGridPos = sim::snapToGrid(sf::Mouse::getPosition(*window));
+            eventHandler.wire->updatePosition(mouseGridPos);
+            std::cout << "vertex count: " << eventHandler.wire->getVertexCount() << std::endl;
+        }
     }
+
+    std::cout << "wires: " << Wire::getWireCount() << std::endl;
 }
 
 void App::loadAssets()
@@ -59,5 +66,5 @@ void App::loadAssets()
 
 App::~App()
 {
-    delete window;
+    std::cout << "exited app" << std::endl;
 }

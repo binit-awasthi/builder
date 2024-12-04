@@ -1,8 +1,12 @@
 #include "components/Wire.hpp"
 
+std::vector<std::shared_ptr<Wire>> Wire::wires;
+
 Wire::Wire()
 {
     std::cout << "created: wire" << std::endl;
+    wire.setPrimitiveType(sf::TrianglesStrip);
+    wire.clear();
     path.clear();
 }
 
@@ -10,33 +14,6 @@ void Wire::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     if (path.size() < 2)
         return;
-
-    sf::VertexArray wire(sf::TrianglesStrip);
-
-    for (auto it = path.begin(); std::next(it) != path.end(); ++it)
-    {
-        sf::Vector2i start = *it;
-        sf::Vector2i end = *std::next(it);
-
-        sf::Vector2f startPos(start.x * sim::CELL_SIZE + sim::CELL_SIZE / 2, start.y * sim::CELL_SIZE + sim::CELL_SIZE / 2);
-        sf::Vector2f endPos(end.x * sim::CELL_SIZE + sim::CELL_SIZE / 2, end.y * sim::CELL_SIZE + sim::CELL_SIZE / 2);
-
-        float angle = std::atan2(endPos.y - startPos.y, endPos.x - startPos.x);
-        float cosAngle = std::cos(angle);
-        float sinAngle = std::sin(angle);
-
-        sf::Vector2f offset(sim::WIRE_THICKNESS / 2 * sinAngle, -sim::WIRE_THICKNESS / 2 * cosAngle);
-
-        sf::Vector2f p1 = startPos - offset;
-        sf::Vector2f p2 = startPos + offset;
-        sf::Vector2f p3 = endPos - offset;
-        sf::Vector2f p4 = endPos + offset;
-
-        wire.append(sf::Vertex(p1, sf::Color::White));
-        wire.append(sf::Vertex(p2, sf::Color::White));
-        wire.append(sf::Vertex(p3, sf::Color::White));
-        wire.append(sf::Vertex(p4, sf::Color::White));
-    }
 
     target.draw(wire);
 }
@@ -59,11 +36,12 @@ void Wire::addPoint(sf::Vector2i newPoint)
 
     path.push_back(newPoint);
     visited.insert(newPoint);
+
+    addPathToWire();
 }
 
 void Wire::updatePosition(sf::Vector2i &mouseGridPos)
 {
-
     if (!path.empty())
     {
         sf::Vector2i lastPos = path.back();
@@ -89,6 +67,51 @@ size_t Wire::VectorHash::operator()(const sf::Vector2i &v) const
 
 void Wire::deleteWire()
 {
-    path.clear();
-    visited.clear();
+    wires.clear();
+    std::cout << "delete wires" << std::endl;
+}
+
+int Wire::getVertexCount()
+{
+    return wire.getVertexCount();
+}
+
+int Wire::getWireCount()
+{
+    return wires.size();
+}
+
+void Wire::addWire(std::shared_ptr<Wire> newWire)
+{
+    wires.push_back(newWire);
+}
+
+void Wire::addPathToWire()
+{
+    wire.clear();
+
+    for (auto it = path.begin(); std::next(it) != path.end(); ++it)
+    {
+        sf::Vector2i start = *it;
+        sf::Vector2i end = *std::next(it);
+
+        sf::Vector2f startPos(start.x * sim::CELL_SIZE + sim::CELL_SIZE / 2, start.y * sim::CELL_SIZE + sim::CELL_SIZE / 2);
+        sf::Vector2f endPos(end.x * sim::CELL_SIZE + sim::CELL_SIZE / 2, end.y * sim::CELL_SIZE + sim::CELL_SIZE / 2);
+
+        float angle = std::atan2(endPos.y - startPos.y, endPos.x - startPos.x);
+        float cosAngle = std::cos(angle);
+        float sinAngle = std::sin(angle);
+
+        sf::Vector2f offset(sim::WIRE_THICKNESS / 2 * sinAngle, -sim::WIRE_THICKNESS / 2 * cosAngle);
+
+        sf::Vector2f p1 = startPos - offset;
+        sf::Vector2f p2 = startPos + offset;
+        sf::Vector2f p3 = endPos - offset;
+        sf::Vector2f p4 = endPos + offset;
+
+        wire.append(sf::Vertex(p1, sf::Color::White));
+        wire.append(sf::Vertex(p2, sf::Color::White));
+        wire.append(sf::Vertex(p3, sf::Color::White));
+        wire.append(sf::Vertex(p4, sf::Color::White));
+    }
 }

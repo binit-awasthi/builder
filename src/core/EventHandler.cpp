@@ -23,35 +23,8 @@ void EventHandler::handleMouseMoveEvents(sf::Event event)
 {
 }
 
-void EventHandler::handleMousePressEvents(sf::Event event)
-{
-
-    if (event.mouseButton.button == sf::Mouse::Left)
-    {
-        isDragging = true;
-        start = sim::snapToGrid({event.mouseButton.x, event.mouseButton.y});
-        wire = new Wire();
-        wire->addPoint(start);
-
-        DrawHandler::itemsToDraw.push_back(wire);
-    }
-}
-
-void EventHandler::handleMouseReleaseEvents(sf::Event event)
-{
-    if (event.mouseButton.button == sf::Mouse::Left)
-    {
-        isDragging = false;
-        if (wire)
-        {
-            wire = nullptr;
-        }
-    }
-}
-
 void EventHandler::handleKeyPressEvents(sf::Event event)
 {
-    // std::cout << "event key code: " << event.key.code << std::endl;
     if (event.key.control && event.key.code == sf::Keyboard::Q)
     {
         sim::closeWindow(window);
@@ -62,5 +35,40 @@ void EventHandler::handleKeyPressEvents(sf::Event event)
 
 void EventHandler::handleKeyReleaseEvents(sf::Event event)
 {
-    // std::cout << "event key code: " << event.key.code << std::endl;
+}
+
+void EventHandler::handleMousePressEvents(const sf::Event &event)
+{
+    if (event.mouseButton.button == sf::Mouse::Left)
+    {
+        isDragging = true;
+        start = sim::snapToGrid({event.mouseButton.x, event.mouseButton.y});
+        wire = std::make_shared<Wire>();
+        wire->addPoint(start);
+
+        DrawHandler::itemToDraw = wire;
+    }
+    if (event.mouseButton.button == sf::Mouse::Right)
+    {
+        Wire::deleteWire();
+    }
+}
+
+void EventHandler::handleMouseReleaseEvents(const sf::Event &event)
+{
+    if (event.mouseButton.button == sf::Mouse::Left)
+    {
+        isDragging = false;
+        if (wire)
+        {
+            if (wire->getVertexCount() < 4)
+            {
+                wire.reset();
+            }
+            else
+            {
+                Wire::addWire(wire);
+            }
+        }
+    }
 }
