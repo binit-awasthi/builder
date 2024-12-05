@@ -1,6 +1,6 @@
 #include "components/Wire.hpp"
 
-std::vector<std::shared_ptr<Wire>> Wire::wires;
+std::vector<std::unique_ptr<Wire>> Wire::wires;
 
 Wire::Wire()
 {
@@ -56,6 +56,10 @@ void Wire::updatePosition(sf::Vector2i &mouseGridPos)
             {
                 addPoint(mouseGridPos);
             }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
+            {
+                addPoint({mouseGridPos.x, lastPos.y});
+            }
         }
     }
 }
@@ -81,9 +85,9 @@ int Wire::getWireCount()
     return wires.size();
 }
 
-void Wire::addWire(std::shared_ptr<Wire> newWire)
+void Wire::addWire(std::unique_ptr<Wire> newWire)
 {
-    wires.push_back(newWire);
+    wires.push_back(std::move(newWire));
 }
 
 void Wire::addPathToWire()
@@ -109,9 +113,9 @@ void Wire::addPathToWire()
         sf::Vector2f p3 = endPos - offset;
         sf::Vector2f p4 = endPos + offset;
 
-        wire.append(sf::Vertex(p1, sf::Color::White));
-        wire.append(sf::Vertex(p2, sf::Color::White));
-        wire.append(sf::Vertex(p3, sf::Color::White));
-        wire.append(sf::Vertex(p4, sf::Color::White));
+        wire.append(sf::Vertex(p1, getColor(style::color::wire)));
+        wire.append(sf::Vertex(p2, getColor(style::color::wire)));
+        wire.append(sf::Vertex(p3, getColor(style::color::wire)));
+        wire.append(sf::Vertex(p4, getColor(style::color::wire)));
     }
 }

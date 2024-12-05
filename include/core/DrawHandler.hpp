@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include "components/Wire.hpp"
+#include "core/EventHandler.hpp"
 
 class DrawHandler
 {
@@ -14,7 +15,7 @@ private:
 public:
     void draw(sf::RenderWindow &);
     static std::vector<std::shared_ptr<sf::Drawable>> itemsToDraw;
-    static std::shared_ptr<sf::Drawable> itemToDraw ;
+    // static std::shared_ptr<sf::Drawable> itemToDraw ;
 };
 
 #endif

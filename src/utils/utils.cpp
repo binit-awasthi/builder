@@ -3,7 +3,7 @@
 sf::Font sim::font;
 sf::Image sim::icon;
 
-const int sim::CELL_SIZE = 20;
+const int sim::CELL_SIZE = 10;
 const float sim::WIRE_THICKNESS = 5.0f;
 
 void sim::fileOpener()
@@ -79,9 +79,9 @@ sf::Color getColor(style::color color)
     case style::color::wireStart:
         return sf::Color::Green;
     case style::color::wire:
-        return sf::Color::White;
+        return sf::Color::Green;
     case style::color::gate:
-        return sf::Color::Magenta;
+        return sf::Color::White;
     case style::color::pin:
         return sf::Color::White;
     case style::color::window:

@@ -2,22 +2,27 @@
 
 std::vector<std::shared_ptr<sf::Drawable>> DrawHandler::itemsToDraw;
 
-std::shared_ptr<sf::Drawable> DrawHandler::itemToDraw = nullptr;
+// std::shared_ptr<sf::Drawable> DrawHandler::itemToDraw = nullptr;
 
 void DrawHandler::draw(sf::RenderWindow &window)
 {
-    // for (auto item : itemsToDraw)
-    // {
-    //     if (item)
-    //         window.draw(*item);
-    // }
-
-    if (itemToDraw)
+    for (auto item : itemsToDraw)
     {
-        window.draw(*itemToDraw);
+        if (item)
+            window.draw(*item);
     }
 
-    for (const auto item : Wire::wires)
+    // if (itemToDraw)
+    // {
+    //     window.draw(*itemToDraw);
+    // }
+
+    if (EventHandler::wire)
+    {
+        window.draw(*EventHandler::wire);
+    }
+
+    for (const auto &item : Wire::wires)
     {
         window.draw(*item);
     }

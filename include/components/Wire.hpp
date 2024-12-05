@@ -25,9 +25,9 @@ public:
     void updatePosition(sf::Vector2i &mouseGridPos);
     static void deleteWire();
     int getVertexCount();
-    static std::vector<std::shared_ptr<Wire>> wires;
+    static std::vector<std::unique_ptr<Wire>> wires;
     static int getWireCount();
-    static void addWire(std::shared_ptr<Wire>);
+    static void addWire(std::unique_ptr<Wire>);
 };
 
 #endif
