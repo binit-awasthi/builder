@@ -6,6 +6,7 @@
 #include "core/DrawHandler.hpp"
 #include "utils/utils.hpp"
 #include <memory>
+#include "components/sideBar.hpp"
 
 class App
 {
@@ -19,7 +20,11 @@ private:
     void loadAssets();
     sf::ContextSettings settings;
     DrawHandler drawHandler;
-
+    //
+    // std::unique_ptr<Sidebar> sidebar;
+    sf::Clock clock;
+    float deltaTime;
+    //
 public:
     App();
     ~App();

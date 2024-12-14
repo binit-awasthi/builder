@@ -8,6 +8,12 @@ Wire::Wire()
     wire.setPrimitiveType(sf::TrianglesStrip);
     wire.clear();
     path.clear();
+
+    //
+    inputIndex = -1;
+    outputIndex = -1;
+
+    //
 }
 
 void Wire::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -71,6 +77,8 @@ size_t Wire::VectorHash::operator()(const sf::Vector2i &v) const
 
 void Wire::deleteWire()
 {
+    if (wires.empty())
+        return;
     wires.clear();
     std::cout << "delete wires" << std::endl;
 }
@@ -87,7 +95,7 @@ int Wire::getWireCount()
 
 void Wire::addWire(std::unique_ptr<Wire> newWire)
 {
-    wires.push_back(std::move(newWire));
+    wires.emplace_back(std::move(newWire));
 }
 
 void Wire::addPathToWire()
@@ -113,9 +121,45 @@ void Wire::addPathToWire()
         sf::Vector2f p3 = endPos - offset;
         sf::Vector2f p4 = endPos + offset;
 
-        wire.append(sf::Vertex(p1, getColor(style::color::wire)));
-        wire.append(sf::Vertex(p2, getColor(style::color::wire)));
-        wire.append(sf::Vertex(p3, getColor(style::color::wire)));
-        wire.append(sf::Vertex(p4, getColor(style::color::wire)));
+        wire.append(sf::Vertex(p1, getColor(style::color::low)));
+        wire.append(sf::Vertex(p2, getColor(style::color::low)));
+        wire.append(sf::Vertex(p3, getColor(style::color::low)));
+        wire.append(sf::Vertex(p4, getColor(style::color::low)));
     }
+}
+
+void Wire::updateState()
+{
+    if (!(source && destination))
+        return;
+    state = (source->oPins[outputIndex]).getState();
+    (destination->iPins[inputIndex]).setState(state);
+    updateColor();
+}
+
+Wire::~Wire()
+{
+    std::cout << "deletd wire" << std::endl;
+}
+
+bool Wire::contains(sf::Vector2f pos)
+{
+
+    sf::FloatRect bounds = wire.getBounds();
+    return bounds.contains(pos);
+}
+
+void Wire::updateColor()
+{
+    if (state)
+        for (int i = 0; i < wire.getVertexCount(); i++)
+        {
+            wire[i].color = sf::Color(getColor(style::color::high));
+        }
+
+    else
+        for (int i = 0; i < wire.getVertexCount(); i++)
+        {
+            wire[i].color = sf::Color(getColor(style::color::low));
+        }
 }

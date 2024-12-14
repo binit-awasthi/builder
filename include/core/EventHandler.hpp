@@ -7,6 +7,8 @@
 #include "core/DrawHandler.hpp"
 #include "components/Wire.hpp"
 #include "components/Node.hpp"
+#include "components/Pin.hpp"
+// #include "components/sideBar.hpp"
 
 class EventHandler
 {

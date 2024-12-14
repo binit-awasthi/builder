@@ -2,20 +2,8 @@
 
 std::vector<std::shared_ptr<sf::Drawable>> DrawHandler::itemsToDraw;
 
-// std::shared_ptr<sf::Drawable> DrawHandler::itemToDraw = nullptr;
-
 void DrawHandler::draw(sf::RenderWindow &window)
 {
-    for (auto item : itemsToDraw)
-    {
-        if (item)
-            window.draw(*item);
-    }
-
-    // if (itemToDraw)
-    // {
-    //     window.draw(*itemToDraw);
-    // }
 
     if (EventHandler::wire)
     {
@@ -25,5 +13,15 @@ void DrawHandler::draw(sf::RenderWindow &window)
     for (const auto &item : Wire::wires)
     {
         window.draw(*item);
+    }
+    for (const auto item : itemsToDraw)
+    {
+        if (item)
+            window.draw(*item);
+    }
+    for (const auto &node : Node::nodes)
+    {
+        if (node)
+            window.draw(*node);
     }
 }

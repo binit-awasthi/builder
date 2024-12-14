@@ -1,16 +1,232 @@
 #include "components/Node.hpp"
 
-Node::Node(sf::Vector2i pos)
-{
-    rect.setSize({(float)sim::CELL_SIZE * 9, (float)sim::CELL_SIZE * 5});
-    sf::FloatRect bounds = rect.getLocalBounds();
-    rect.setOrigin(bounds.width / 2, bounds.height / 2);
-    rect.setFillColor(getColor(style::color::gate));
+std::vector<std::shared_ptr<Node>> Node::nodes;
 
-    rect.setPosition(pos.x * sim::CELL_SIZE + sim::CELL_SIZE / 2, pos.y * sim::CELL_SIZE + sim::CELL_SIZE / 2);
+Node::Node(Operation operation, sf::Vector2i pos, int nInput, int nOutput) : operation(operation)
+{
+    pinOffset = sim::CELL_SIZE;
+
+    shape.setPosition({pos.x * sim::CELL_SIZE + (float)sim::CELL_SIZE / 2, pos.y * sim::CELL_SIZE + (float)sim::CELL_SIZE / 2});
+    shape.setLabel(getOperationName());
+
+    for (int i = 0; i < nInput; i++)
+    {
+        iPins.emplace_back();
+    }
+    for (int i = 0; i < nOutput; i++)
+    {
+        oPins.emplace_back();
+    }
+
+    updatePinPos();
+    setEvaluatorFunction();
 }
 
 void Node::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    target.draw(rect);
+    target.draw(shape);
+    for (const auto &pin : iPins)
+    {
+        target.draw(pin);
+    }
+    for (const auto &pin : oPins)
+    {
+        target.draw(pin);
+    }
+    target.draw(label);
+}
+
+void Node::updatePinPos()
+{
+    sf::Vector2f rectPos = shape.shape.getPosition();
+    sf::FloatRect rectBounds = shape.shape.getLocalBounds();
+
+    float leftX = rectPos.x - rectBounds.width / 2;
+    float rightX = rectPos.x + rectBounds.width / 2;
+    float nodeCenterY = rectPos.y;
+
+    auto arrangePins = [](std::vector<Pin> &pins, float baseX, float centerY, float pinOffset)
+    {
+        int count = pins.size();
+
+        if (count == 0)
+            return;
+
+        float startY = centerY;
+
+        if (count % 2 == 1)
+        {
+            pins[count / 2].shape.setPosition(baseX, centerY);
+
+            for (int i = 1; i <= count / 2; i++)
+            {
+                pins[count / 2 - i].shape.setPosition(baseX, centerY - i * pinOffset); // Above
+                pins[count / 2 + i].shape.setPosition(baseX, centerY + i * pinOffset); // Below
+            }
+        }
+        else
+        {
+            int topIndex = 0;
+            int bottomIndex = count - 1;
+
+            for (int i = 0; i < count / 2; i++)
+            {
+                pins[topIndex++].shape.setPosition(baseX, centerY - (count / 2 - i) * pinOffset);    // Top
+                pins[bottomIndex--].shape.setPosition(baseX, centerY + (count / 2 - i) * pinOffset); // Bottom
+            }
+        }
+    };
+
+    arrangePins(iPins, leftX, nodeCenterY, pinOffset);
+
+    arrangePins(oPins, rightX, nodeCenterY, pinOffset);
+}
+
+void Node::addNode(std::shared_ptr<Node> newNode)
+{
+    nodes.emplace_back(std::move(newNode));
+}
+
+void Node::deleteNodes()
+{
+    if (nodes.empty())
+        return;
+    nodes.clear();
+    std::cout << "deleted all nodes" << std::endl;
+}
+
+//
+
+void Node::update()
+{
+    // setEvaluatorFunction();
+    evaluate();
+}
+
+void Node::setEvaluatorFunction()
+{
+    switch (operation)
+    {
+    case Operation::AND:
+        evaluator = [](const std::vector<bool> &inputs)
+        {
+            for (bool input : inputs)
+            {
+                if (!input)
+                    return false;
+            }
+            return true;
+        };
+        break;
+    case Operation::OR:
+        evaluator = [](const std::vector<bool> &inputs)
+        {
+            for (bool input : inputs)
+            {
+                if (input)
+                    return true;
+            }
+            return false;
+        };
+        break;
+    case Operation::NOT:
+        evaluator = [](const std::vector<bool> &inputs)
+        {
+            if (inputs.size() != 1)
+            {
+                throw std::invalid_argument("NOT gate requires exactly one input.");
+            }
+            return !inputs[0];
+        };
+        break;
+    case Operation::XOR:
+        evaluator = [](const std::vector<bool> &inputs)
+        {
+            bool result = false;
+            for (bool input : inputs)
+            {
+                result ^= input;
+            }
+            return result;
+        };
+        break;
+    case Operation::NAND:
+        evaluator = [](const std::vector<bool> &inputs)
+        {
+            for (bool input : inputs)
+            {
+                if (!input)
+                    return true;
+            }
+            return false;
+        };
+        break;
+    case Operation::NOR:
+        evaluator = [](const std::vector<bool> &inputs)
+        {
+            for (bool input : inputs)
+            {
+                if (input)
+                    return false;
+            }
+            return true;
+        };
+        break;
+    case Operation::BUFFER:
+        evaluator = [](const std::vector<bool> &inputs)
+        {
+            if (inputs.size() != 1)
+            {
+                throw std::invalid_argument("BUFFER gate requires exactly one input.");
+            }
+            return inputs[0];
+        };
+        break;
+    default:
+        throw std::invalid_argument("Invalid operation.");
+    }
+}
+
+void Node::evaluate()
+{
+    std::vector<bool> inputs;
+    for (auto &iPin : iPins)
+    {
+        inputs.push_back(iPin.getState());
+    }
+
+    bool output = evaluator(inputs);
+    std::cout << "output: " << output << std::endl;
+    oPins[0].setState(output);
+    std::cout << "output: " << oPins[0].getState() << std::endl;
+}
+
+std::string Node::getOperationName() const
+{
+    switch (operation)
+    {
+    case Operation::AND:
+        return "AND";
+    case Operation::OR:
+        return "OR";
+    case Operation::NOT:
+        return "NOT";
+    case Operation::XOR:
+        return "XOR";
+    case Operation::NAND:
+        return "NAND";
+    case Operation::NOR:
+        return "NOR";
+    case Operation::BUFFER:
+        return "BUFFER";
+    default:
+        return "UNKNOWN";
+    }
+}
+
+//
+
+bool Node::contains(sf::Vector2f pos)
+{
+    return shape.contains(pos);
 }

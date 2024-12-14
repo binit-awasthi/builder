@@ -76,16 +76,19 @@ sf::Color getColor(style::color color)
 {
     switch (color)
     {
-    case style::color::wireStart:
-        return sf::Color::Green;
-    case style::color::wire:
-        return sf::Color::Green;
     case style::color::gate:
-        return sf::Color::White;
-    case style::color::pin:
-        return sf::Color::White;
+        return sf::Color(247, 44, 91);
+    case style::color::low:
+        return sf::Color(98, 94, 94);
+    case style::color::high:
+        return sf::Color(230, 233, 234);
+
+    case style::color::selected:
+        return sf::Color(12, 140, 233);
+
     case style::color::window:
         return sf::Color(30, 30, 30, 1);
+
     default:
         return sf::Color::White;
     }
@@ -107,4 +110,45 @@ void sim::drawGrid(sf::RenderWindow &window)
             window.draw(cell);
         }
     }
+}
+
+sf::ConvexShape sim::createRoundedRect(float width, float height, float radius, sf::Color color)
+{
+    const int cornerPoints = 10;
+    sf::ConvexShape shape(4 * (cornerPoints + 1));
+
+    shape.setFillColor(color);
+
+    float angleStep = 90.0f / cornerPoints;
+    int index = 0;
+
+    // Top-left corner
+    for (int i = 0; i <= cornerPoints; ++i)
+    {
+        float angle = (180 + i * angleStep) * (M_PI / 180.0f); // Convert to radians
+        shape.setPoint(index++, {radius + radius * std::cos(angle), radius + radius * std::sin(angle)});
+    }
+
+    // Top-right corner
+    for (int i = 0; i <= cornerPoints; ++i)
+    {
+        float angle = (270 + i * angleStep) * (M_PI / 180.0f);
+        shape.setPoint(index++, {width - radius + radius * std::cos(angle), radius + radius * std::sin(angle)});
+    }
+
+    // Bottom-right corner
+    for (int i = 0; i <= cornerPoints; ++i)
+    {
+        float angle = (0 + i * angleStep) * (M_PI / 180.0f);
+        shape.setPoint(index++, {width - radius + radius * std::cos(angle), height - radius + radius * std::sin(angle)});
+    }
+
+    // Bottom-left corner
+    for (int i = 0; i <= cornerPoints; ++i)
+    {
+        float angle = (90 + i * angleStep) * (M_PI / 180.0f);
+        shape.setPoint(index++, {radius + radius * std::cos(angle), height - radius + radius * std::sin(angle)});
+    }
+
+    return shape;
 }

@@ -46,15 +46,58 @@ void EventHandler::handleMousePressEvents(const sf::Event &event)
         isDragging = true;
         start = sim::snapToGrid({event.mouseButton.x, event.mouseButton.y});
         wire = std::make_unique<Wire>();
-        wire->addPoint(start);
 
-        DrawHandler::itemsToDraw.push_back(std::make_shared<Node>(sim::snapToGrid({event.mouseButton.x, event.mouseButton.y})));
-        // DrawHandler::itemToDraw = wire;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+        {
+            Node::addNode(std::make_unique<Node>(Node::Operation::NAND, sim::snapToGrid({event.mouseButton.x, event.mouseButton.y})));
+        }
+
+        bool validSource = false;
+
+        for (auto &node : Node::nodes)
+        {
+            for (int i = 0; i < node->oPins.size(); i++)
+            {
+                if (node->oPins[i].contains(sim::getMousePos(window)))
+                {
+                    wire->addPoint(start);
+                    wire->source = node;
+                    wire->outputIndex = i;
+                    validSource = true;
+                    break;
+                }
+            }
+            if (validSource)
+                break;
+        }
+
+        if (!validSource)
+        {
+            wire.reset();
+        }
     }
+
     if (event.mouseButton.button == sf::Mouse::Right)
     {
-        wire.reset();
-        Wire::deleteWire();
+        sf::Vector2f mousePos = sim::getMousePos(window);
+
+        for (auto it = Wire::wires.begin(); it != Wire::wires.end(); ++it)
+        {
+            if ((*it)->contains(mousePos))
+            {
+                Wire::wires.erase(it);
+                return;
+            }
+        }
+
+        for (auto it = Node::nodes.begin(); it != Node::nodes.end(); ++it)
+        {
+            if ((*it)->contains(mousePos))
+            {
+                Node::nodes.erase(it);
+                return;
+            }
+        }
     }
 }
 
@@ -65,14 +108,32 @@ void EventHandler::handleMouseReleaseEvents(const sf::Event &event)
         isDragging = false;
         if (wire)
         {
-            if (wire->getVertexCount() < 4)
+            bool validDestination = false;
+
+            for (auto &node : Node::nodes)
+            {
+                for (int i = 0; i < node->iPins.size(); i++)
+                {
+                    if (node->iPins[i].contains(sim::getMousePos(window)))
+                    {
+                        wire->addPoint(sim::snapToGrid(sf::Vector2i(event.mouseButton.x, event.mouseButton.y)));
+                        wire->destination = node;
+                        wire->inputIndex = i;
+                        validDestination = true;
+                        break;
+                    }
+                }
+                if (validDestination)
+                    break;
+            }
+
+            if (!validDestination || wire->outputIndex == -1 || wire->inputIndex == -1)
             {
                 wire.reset();
             }
             else
             {
                 Wire::addWire(std::move(wire));
-                wire.reset();
             }
         }
     }

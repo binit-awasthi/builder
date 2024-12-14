@@ -29,17 +29,26 @@ namespace sim
     sf::Vector2i snapToGrid(const sf::Vector2i &);
     void drawGrid(sf::RenderWindow &);
 
+    template <typename T>
+    T lerp(const T &start, const T &end, float alpha)
+    {
+        return start + alpha * (end - start);
+    }
+
+    sf::ConvexShape createRoundedRect(float width, float height, float radius, sf::Color color);
+
 }
 
 namespace style
 {
     enum class color
     {
-        wire,
-        wireStart,
         gate,
-        pin,
-        window
+        window,
+        low,
+        high,
+        selected
+
     };
 }
 
