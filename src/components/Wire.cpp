@@ -24,7 +24,7 @@ void Wire::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(wire);
 }
 
-void Wire::addPoint(sf::Vector2i newPoint)
+void Wire::addPoint(sf::Vector2i newPoint, int endSpecifier)
 {
     if (visited.find(newPoint) != visited.end())
     {
@@ -40,31 +40,39 @@ void Wire::addPoint(sf::Vector2i newPoint)
         }
     }
 
-    path.push_back(newPoint);
+    if (endSpecifier == 0)
+        path.push_front(newPoint);
+    else if (endSpecifier == 1)
+        path.push_back(newPoint);
     visited.insert(newPoint);
 
-    addPathToWire();
+    addWireToPath();
 }
 
-void Wire::updatePosition(sf::Vector2i &mouseGridPos)
+void Wire::updatePath(const sf::Vector2i &mouseGridPos, int endSpecifier)
 {
     if (!path.empty())
     {
-        sf::Vector2i lastPos = path.back();
+        sf::Vector2i lastPos{0, 0};
+        if (endSpecifier == 0)
+            lastPos = path.front();
+        else if (endSpecifier == 1)
+            lastPos = path.back();
 
         if (mouseGridPos != lastPos)
         {
             if (mouseGridPos.x != lastPos.x && mouseGridPos.y != lastPos.y)
             {
-                addPoint({mouseGridPos.x, lastPos.y});
+                addPoint({mouseGridPos.x, lastPos.y}, endSpecifier);
             }
-            if (mouseGridPos != path.back())
+
+            if (endSpecifier == 0 && mouseGridPos != path.front() || endSpecifier == 1 && mouseGridPos != path.back())
             {
-                addPoint(mouseGridPos);
+                addPoint(mouseGridPos, endSpecifier);
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
             {
-                addPoint({mouseGridPos.x, lastPos.y});
+                addPoint({mouseGridPos.x, lastPos.y}, endSpecifier);
             }
         }
     }
@@ -98,7 +106,7 @@ void Wire::addWire(std::unique_ptr<Wire> newWire)
     wires.emplace_back(std::move(newWire));
 }
 
-void Wire::addPathToWire()
+void Wire::addWireToPath()
 {
     wire.clear();
 
@@ -162,4 +170,17 @@ void Wire::updateColor()
         {
             wire[i].color = sf::Color(getColor(style::color::low));
         }
+}
+
+void Wire::updatePosition()
+{
+    if (source && outputIndex >= 0)
+    {
+        // path.push_front(sim::snapToGrid((source->oPins[outputIndex]).getPosition()));
+        updatePath(sim::snapToGrid((source->oPins[outputIndex]).getPosition()), 0);
+    }
+    if (destination && inputIndex >= 0)
+    {
+        updatePath(sim::snapToGrid((destination->iPins[inputIndex]).getPosition()));
+    }
 }

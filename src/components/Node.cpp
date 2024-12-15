@@ -6,9 +6,6 @@ Node::Node(Operation operation, sf::Vector2i pos, int nInput, int nOutput) : ope
 {
     pinOffset = sim::CELL_SIZE;
 
-    shape.setPosition({pos.x * sim::CELL_SIZE + (float)sim::CELL_SIZE / 2, pos.y * sim::CELL_SIZE + (float)sim::CELL_SIZE / 2});
-    shape.setLabel(getOperationName());
-
     for (int i = 0; i < nInput; i++)
     {
         iPins.emplace_back();
@@ -18,7 +15,8 @@ Node::Node(Operation operation, sf::Vector2i pos, int nInput, int nOutput) : ope
         oPins.emplace_back();
     }
 
-    updatePinPos();
+    setPosition(pos);
+    shape.setLabel(getOperationName());
     setEvaluatorFunction();
 }
 
@@ -99,7 +97,6 @@ void Node::deleteNodes()
 
 void Node::update()
 {
-    // setEvaluatorFunction();
     evaluate();
 }
 
@@ -195,10 +192,7 @@ void Node::evaluate()
         inputs.push_back(iPin.getState());
     }
 
-    bool output = evaluator(inputs);
-    std::cout << "output: " << output << std::endl;
-    oPins[0].setState(output);
-    std::cout << "output: " << oPins[0].getState() << std::endl;
+    oPins[0].setState(evaluator(inputs));
 }
 
 std::string Node::getOperationName() const
@@ -229,4 +223,28 @@ std::string Node::getOperationName() const
 bool Node::contains(sf::Vector2f pos)
 {
     return shape.contains(pos);
+}
+
+void Node::setPosition(sf::Vector2i pos)
+{
+    shape.setPosition({pos.x * sim::CELL_SIZE + (float)sim::CELL_SIZE / 2, pos.y * sim::CELL_SIZE + (float)sim::CELL_SIZE / 2});
+    updatePinPos();
+}
+
+void Node::move(const sf::Vector2f &delta)
+{
+
+    shape.shape.move(delta);
+    shape.text.move(delta);
+
+    for (auto &pin : iPins)
+        pin.shape.move(delta);
+
+    for (auto &pin : oPins)
+        pin.shape.move(delta);
+}
+
+sf::Vector2f Node::getPosition()
+{
+    return (shape.shape.getPosition());
 }

@@ -82,12 +82,10 @@ sf::Color getColor(style::color color)
         return sf::Color(98, 94, 94);
     case style::color::high:
         return sf::Color(230, 233, 234);
-
     case style::color::selected:
         return sf::Color(12, 140, 233);
-
     case style::color::window:
-        return sf::Color(30, 30, 30, 1);
+        return sf::Color(18, 20, 20, 255);
 
     default:
         return sf::Color::White;

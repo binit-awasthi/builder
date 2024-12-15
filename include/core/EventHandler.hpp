@@ -8,7 +8,6 @@
 #include "components/Wire.hpp"
 #include "components/Node.hpp"
 #include "components/Pin.hpp"
-// #include "components/sideBar.hpp"
 
 class EventHandler
 {
@@ -29,6 +28,12 @@ public:
     bool isDragging;
     EventHandler(sf::RenderWindow &);
     void handleEvents(sf::Event);
+
+    //
+    Node *selectedNode;
+    sf::Vector2f nodeInitialPosition;
+    
+    //
 };
 
 #endif

@@ -19,7 +19,7 @@ class Wire : public sf::Drawable
     };
     std::unordered_set<sf::Vector2i, VectorHash> visited;
     sf::VertexArray wire;
-    void addPathToWire();
+    void addWireToPath();
     //
 
     bool state;
@@ -28,8 +28,8 @@ class Wire : public sf::Drawable
 public:
     Wire();
     ~Wire();
-    void addPoint(sf::Vector2i newPoint);
-    void updatePosition(sf::Vector2i &mouseGridPos);
+    void addPoint(sf::Vector2i newPoint, int endSpecifier = 1);
+    void updatePath(const sf::Vector2i &mouseGridPos, int endSpecifier = 1);
     static void deleteWire();
     int getVertexCount();
     static std::vector<std::unique_ptr<Wire>> wires;
@@ -44,6 +44,7 @@ public:
     bool contains(sf::Vector2f);
     void updateColor();
     //
+    void updatePosition();
 };
 
 #endif

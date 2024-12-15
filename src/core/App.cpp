@@ -64,7 +64,7 @@ void App::update(EventHandler &eventHandler)
         if (eventHandler.wire)
         {
             sf::Vector2i mouseGridPos = sim::snapToGrid(sf::Mouse::getPosition(*window));
-            eventHandler.wire->updatePosition(mouseGridPos);
+            eventHandler.wire->updatePath(mouseGridPos);
         }
     }
 

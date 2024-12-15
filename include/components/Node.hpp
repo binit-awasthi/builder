@@ -55,6 +55,9 @@ public:
     std::vector<Pin> oPins;
     bool contains(sf::Vector2f);
     //
+    void setPosition(sf::Vector2i);
+    void move(const sf::Vector2f &delta);
+    sf::Vector2f getPosition();
 };
 
 #endif
