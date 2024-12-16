@@ -30,7 +30,7 @@ public:
     ~Wire();
     void addPoint(sf::Vector2i newPoint, int endSpecifier = 1);
     void updatePath(const sf::Vector2i &mouseGridPos, int endSpecifier = 1);
-    static void deleteWire();
+    static void deleteWires();
     int getVertexCount();
     static std::vector<std::unique_ptr<Wire>> wires;
     static int getWireCount();
@@ -46,7 +46,8 @@ public:
     //
     void updatePosition();
     static bool deleteHovered(const sf::Vector2f &);
-    static  Wire *checkHovered(const sf::Vector2f &);
+    static Wire *checkHovered(const sf::Vector2f &);
+    static void deleteWire(Wire *);
 };
 
 #endif

@@ -186,6 +186,14 @@ void EventHandler::checkHoverInput(const sf::Vector2i &snappedPos)
 
                     if (wire->outputIndex != -1 && wire->inputIndex != -1)
                     {
+                        Wire *prevWire = node->iPins[wire->inputIndex].wire;
+                        if (prevWire)
+                        {
+                            Wire::deleteWire(prevWire);
+                        }
+
+                        node->iPins[wire->inputIndex].wire = wire.get();
+
                         Wire::addWire(std::move(wire));
                         return;
                     }

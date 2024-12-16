@@ -9,11 +9,8 @@ Wire::Wire()
     wire.clear();
     path.clear();
 
-    //
     inputIndex = -1;
     outputIndex = -1;
-
-    //
 }
 
 void Wire::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -83,12 +80,12 @@ size_t Wire::VectorHash::operator()(const sf::Vector2i &v) const
     return std::hash<int>()(v.x) ^ (std::hash<int>()(v.y) << 1);
 }
 
-void Wire::deleteWire()
+void Wire::deleteWires()
 {
     if (wires.empty())
         return;
     wires.clear();
-    std::cout << "delete wires" << std::endl;
+    std::cout << "deleted wires" << std::endl;
 }
 
 int Wire::getVertexCount()
@@ -210,4 +207,16 @@ Wire *Wire::checkHovered(const sf::Vector2f &pos)
         }
     }
     return nullptr;
+}
+
+void Wire::deleteWire(Wire *wireToDelete)
+{
+    for (auto it = wires.begin(); it != wires.end(); ++it)
+    {
+        if (it->get() == wireToDelete)
+        {
+            wires.erase(it);
+            return;
+        }
+    }
 }

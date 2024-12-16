@@ -1,7 +1,9 @@
 #include "components/Pin.hpp"
+#include "components/Wire.hpp"
 
 Pin::Pin(bool state) : state(state)
 {
+    wire = nullptr;
     shape.setFillColor(getColor(style::color::low));
     shape.setRadius(sim::CELL_SIZE / 2);
     float radius = shape.getRadius();

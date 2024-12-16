@@ -61,6 +61,7 @@ public:
     void hoverInactive();
     void hoverActive();
     static bool deleteHovered(const sf::Vector2f &pos);
+    
 };
 
 #endif

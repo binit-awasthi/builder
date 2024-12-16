@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include "utils/utils.hpp"
 
+class Wire;
+
 class Pin : public sf::Drawable
 {
 
@@ -19,6 +21,7 @@ public:
     sf::Vector2i getPosition();
     void hoverActive();
     void hoverInactive();
+    Wire *wire;
 };
 
 #endif
