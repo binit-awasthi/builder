@@ -18,6 +18,7 @@ Node::Node(Operation operation, sf::Vector2i pos, int nInput, int nOutput) : ope
     setPosition(pos);
     shape.setLabel(getOperationName());
     setEvaluatorFunction();
+    shape.shape.setOutlineColor(getColor(style::color::selected));
 }
 
 void Node::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -247,4 +248,26 @@ void Node::move(const sf::Vector2f &delta)
 sf::Vector2f Node::getPosition()
 {
     return (shape.shape.getPosition());
+}
+
+void Node::hoverActive()
+{
+    shape.shape.setOutlineThickness(1.5f);
+}
+void Node::hoverInactive()
+{
+    shape.shape.setOutlineThickness(0.f);
+}
+
+bool Node::deleteHovered(const sf::Vector2f &pos)
+{
+    for (auto it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        if ((*it)->contains(pos))
+        {
+            nodes.erase(it);
+            return true;
+        }
+    }
+    return false;
 }

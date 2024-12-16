@@ -147,12 +147,15 @@ void Wire::updateState()
 
 Wire::~Wire()
 {
+    if (destination)
+    {
+        destination->iPins[inputIndex].setState(false);
+    }
     std::cout << "deletd wire" << std::endl;
 }
 
 bool Wire::contains(sf::Vector2f pos)
 {
-
     sf::FloatRect bounds = wire.getBounds();
     return bounds.contains(pos);
 }
@@ -176,11 +179,35 @@ void Wire::updatePosition()
 {
     if (source && outputIndex >= 0)
     {
-        // path.push_front(sim::snapToGrid((source->oPins[outputIndex]).getPosition()));
         updatePath(sim::snapToGrid((source->oPins[outputIndex]).getPosition()), 0);
     }
     if (destination && inputIndex >= 0)
     {
         updatePath(sim::snapToGrid((destination->iPins[inputIndex]).getPosition()));
     }
+}
+
+bool Wire::deleteHovered(const sf::Vector2f &pos)
+{
+    for (auto it = wires.begin(); it != wires.end(); ++it)
+    {
+        if ((*it)->contains(pos))
+        {
+            wires.erase(it);
+            return true;
+        }
+    }
+    return false;
+}
+
+Wire *Wire::checkHovered(const sf::Vector2f &pos)
+{
+    for (const auto &wire : wires)
+    {
+        if (wire->contains(pos))
+        {
+            return wire.get();
+        }
+    }
+    return nullptr;
 }

@@ -6,6 +6,7 @@ Pin::Pin(bool state) : state(state)
     shape.setRadius(sim::CELL_SIZE / 2);
     float radius = shape.getRadius();
     shape.setOrigin(radius, radius);
+    shape.setOutlineColor(getColor(style::color::selected));
 }
 
 void Pin::setState(bool state)
@@ -34,4 +35,13 @@ bool Pin::contains(sf::Vector2f point) const
 sf::Vector2i Pin::getPosition()
 {
     return static_cast<sf::Vector2i>(shape.getPosition());
+}
+
+void Pin::hoverActive()
+{
+    shape.setOutlineThickness(1.5f);
+}
+void Pin::hoverInactive()
+{
+    shape.setOutlineThickness(0.f);
 }

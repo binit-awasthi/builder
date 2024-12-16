@@ -58,6 +58,9 @@ public:
     void setPosition(sf::Vector2i);
     void move(const sf::Vector2f &delta);
     sf::Vector2f getPosition();
+    void hoverInactive();
+    void hoverActive();
+    static bool deleteHovered(const sf::Vector2f &pos);
 };
 
 #endif

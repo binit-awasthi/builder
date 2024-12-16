@@ -7,16 +7,6 @@ App::App()
     // window = std::make_unique<sf::RenderWindow>(sf::VideoMode(500, 500), "builder", sf::Style::None, settings);
     window->setFramerateLimit(60);
     loadAssets();
-
-    /*
-        sidebar = std::make_unique<Sidebar>(200, 600, std::vector<std::string>{"Start", "Settings", "Exit"});
-        sidebar->setButtonCallback(0, []()
-                                   { std::cout << "Start clicked!\n"; });
-        sidebar->setButtonCallback(1, []()
-                                   { std::cout << "Settings clicked!\n"; });
-        sidebar->setButtonCallback(2, []()
-                                   { std::cout << "Exit clicked!\n"; });
-    */
 }
 
 void App::run()
@@ -43,7 +33,6 @@ void App::render()
 void App::draw()
 {
     drawHandler.draw(*window);
-    // sidebar->draw(*window);
 }
 
 void App::processEvents(EventHandler &eventHandler)
@@ -52,7 +41,6 @@ void App::processEvents(EventHandler &eventHandler)
     sf::Event event;
     while (window->pollEvent(event))
     {
-        // sidebar->handleEvent(event, *window);
         eventHandler.handleEvents(event);
     }
 }
@@ -68,19 +56,15 @@ void App::update(EventHandler &eventHandler)
         }
     }
 
-    // sidebar->update(deltaTime);
-
-    for (const auto &node : Node::nodes)
-    {
-        node->update();
-    }
-
     for (const auto &wire : Wire::wires)
     {
-        // wire->source->update();
+        wire->source->update();
         wire->updateState();
-        // wire->destination->update();
+        wire->destination->update();
     }
+
+    if (eventHandler.selectedNode)
+        eventHandler.selectedNode->hoverActive();
 }
 
 void App::loadAssets()

@@ -22,10 +22,10 @@ class Wire : public sf::Drawable
     void addWireToPath();
     //
 
-    bool state;
     //
 
 public:
+    bool state;
     Wire();
     ~Wire();
     void addPoint(sf::Vector2i newPoint, int endSpecifier = 1);
@@ -45,6 +45,8 @@ public:
     void updateColor();
     //
     void updatePosition();
+    static bool deleteHovered(const sf::Vector2f &);
+    static  Wire *checkHovered(const sf::Vector2f &);
 };
 
 #endif

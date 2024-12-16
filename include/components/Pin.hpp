@@ -17,6 +17,8 @@ public:
     void draw(sf::RenderTarget &, sf::RenderStates) const override;
     bool contains(sf::Vector2f point) const;
     sf::Vector2i getPosition();
+    void hoverActive();
+    void hoverInactive();
 };
 
 #endif
