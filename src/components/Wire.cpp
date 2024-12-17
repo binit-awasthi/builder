@@ -23,7 +23,7 @@ void Wire::draw(sf::RenderTarget &target, sf::RenderStates states) const
 
 void Wire::addPoint(sf::Vector2i newPoint, int endSpecifier)
 {
-    if (visited.find(newPoint) != visited.end())
+    if (visitedPoints.find(newPoint) != visitedPoints.end())
     {
         auto it = std::find(path.begin(), path.end(), newPoint);
         if (it != path.end())
@@ -31,7 +31,7 @@ void Wire::addPoint(sf::Vector2i newPoint, int endSpecifier)
             auto toRemove = it;
             while (toRemove != path.end())
             {
-                visited.erase(*toRemove);
+                visitedPoints.erase(*toRemove);
                 toRemove = path.erase(toRemove);
             }
         }
@@ -41,7 +41,7 @@ void Wire::addPoint(sf::Vector2i newPoint, int endSpecifier)
         path.push_front(newPoint);
     else if (endSpecifier == 1)
         path.push_back(newPoint);
-    visited.insert(newPoint);
+    visitedPoints.insert(newPoint);
 
     addWireToPath();
 }
@@ -126,20 +126,26 @@ void Wire::addWireToPath()
         sf::Vector2f p3 = endPos - offset;
         sf::Vector2f p4 = endPos + offset;
 
-        wire.append(sf::Vertex(p1, getColor(style::color::low)));
-        wire.append(sf::Vertex(p2, getColor(style::color::low)));
-        wire.append(sf::Vertex(p3, getColor(style::color::low)));
-        wire.append(sf::Vertex(p4, getColor(style::color::low)));
+        wire.append(sf::Vertex(p1, getColor(style::color::selected)));
+        wire.append(sf::Vertex(p2, getColor(style::color::selected)));
+        wire.append(sf::Vertex(p3, getColor(style::color::selected)));
+        wire.append(sf::Vertex(p4, getColor(style::color::selected)));
     }
 }
 
-void Wire::updateState()
+void Wire::updateAllWires()
 {
-    if (!(source && destination))
-        return;
-    state = (source->oPins[outputIndex]).getState();
-    (destination->iPins[inputIndex]).setState(state);
-    updateColor();
+    for (auto &wire : wires)
+    {
+        if (!(wire->source && wire->destination))
+            continue;
+
+        wire->source->update();
+        wire->state = (wire->source->oPins[wire->outputIndex]).getState();
+        (wire->destination->iPins[wire->inputIndex]).setState(wire->state);
+        wire->updateColor();
+        wire->destination->update();
+    }
 }
 
 Wire::~Wire()

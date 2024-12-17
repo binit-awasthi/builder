@@ -56,12 +56,7 @@ void App::update(EventHandler &eventHandler)
         }
     }
 
-    for (const auto &wire : Wire::wires)
-    {
-        wire->source->update();
-        wire->updateState();
-        wire->destination->update();
-    }
+    Wire::updateAllWires();
 
     if (eventHandler.selectedNode)
         eventHandler.selectedNode->hoverActive();

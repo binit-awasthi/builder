@@ -45,6 +45,9 @@ void EventHandler::handleKeyPressEvents(const sf::Event &event)
         case sf::Keyboard::O:
             sim::fileOpener();
             break;
+        case sf::Keyboard::C:
+            Wire::deleteWires();
+            break;
         default:
             break;
         }

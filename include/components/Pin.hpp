@@ -13,15 +13,17 @@ class Pin : public sf::Drawable
 
 public:
     sf::CircleShape shape;
-    Pin(bool state = false);
+    Wire *wire;
+    
     void setState(bool state);
-    bool getState();
     void draw(sf::RenderTarget &, sf::RenderStates) const override;
+    bool getState();
     bool contains(sf::Vector2f point) const;
-    sf::Vector2i getPosition();
     void hoverActive();
     void hoverInactive();
-    Wire *wire;
+    sf::Vector2i getPosition();
+
+    Pin(bool state = false);
 };
 
 #endif

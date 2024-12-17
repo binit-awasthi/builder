@@ -17,37 +17,37 @@ class Wire : public sf::Drawable
     {
         size_t operator()(const sf::Vector2i &v) const;
     };
-    std::unordered_set<sf::Vector2i, VectorHash> visited;
+    std::unordered_set<sf::Vector2i, VectorHash> visitedPoints;
     sf::VertexArray wire;
     void addWireToPath();
-    //
-
-    //
+    sf::Color color;
 
 public:
     bool state;
-    Wire();
-    ~Wire();
-    void addPoint(sf::Vector2i newPoint, int endSpecifier = 1);
-    void updatePath(const sf::Vector2i &mouseGridPos, int endSpecifier = 1);
-    static void deleteWires();
-    int getVertexCount();
-    static std::vector<std::unique_ptr<Wire>> wires;
-    static int getWireCount();
-    static void addWire(std::unique_ptr<Wire>);
-    void updateState();
-    //
-    std::shared_ptr<Node> source;
-    std::shared_ptr<Node> destination;
     int inputIndex;
     int outputIndex;
-    bool contains(sf::Vector2f);
-    void updateColor();
-    //
-    void updatePosition();
+
+    std::shared_ptr<Node> source;
+    std::shared_ptr<Node> destination;
+
+    static std::vector<std::unique_ptr<Wire>> wires;
+    static void deleteWire(Wire *);
+    static void deleteWires();
+    static int getWireCount();
+    static void addWire(std::unique_ptr<Wire>);
     static bool deleteHovered(const sf::Vector2f &);
     static Wire *checkHovered(const sf::Vector2f &);
-    static void deleteWire(Wire *);
+
+    void addPoint(sf::Vector2i newPoint, int endSpecifier = 1);
+    void updatePath(const sf::Vector2i &mouseGridPos, int endSpecifier = 1);
+    void updateColor();
+    void updatePosition();
+    static void updateAllWires();
+    bool contains(sf::Vector2f);
+    int getVertexCount();
+
+    Wire();
+    ~Wire();
 };
 
 #endif

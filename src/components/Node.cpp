@@ -271,4 +271,3 @@ bool Node::deleteHovered(const sf::Vector2f &pos)
     }
     return false;
 }
-

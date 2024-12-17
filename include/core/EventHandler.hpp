@@ -12,31 +12,28 @@
 class EventHandler
 {
     sf::RenderWindow &window;
+    sf::Vector2i start;
+
     void handleKeyPressEvents(const sf::Event &);
-    void handleKeyReleaseEvents(const sf::Event &);
     void handleMouseMoveEvents(const sf::Event &);
     void handleMousePressEvents(const sf::Event &);
     void handleMouseReleaseEvents(const sf::Event &);
-
-    sf::Vector2i start;
-    bool checkHoverOutput(const sf::Vector2f &);
     void moveSelected();
     void checkHoverInput(const sf::Vector2i &);
-    //
     void handleLeftMousePress(const sf::Vector2f &mousePos, const sf::Vector2i &snappedPos);
     void handleRightMousePress(const sf::Vector2f &mousePos);
-    //
-public:
-    static std::unique_ptr<Wire> wire;
-    bool isDragging;
-    EventHandler(sf::RenderWindow &);
-    void handleEvents(sf::Event);
+    bool checkHoverOutput(const sf::Vector2f &);
 
-    //
+public:
+    bool isDragging;
     Node *selectedNode;
     sf::Vector2f nodeInitialPosition;
 
-    //
+    static std::unique_ptr<Wire> wire;
+
+    void handleEvents(sf::Event);
+
+    EventHandler(sf::RenderWindow &);
 };
 
 #endif
