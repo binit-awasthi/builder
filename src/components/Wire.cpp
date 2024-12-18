@@ -11,6 +11,7 @@ Wire::Wire()
 
     inputIndex = -1;
     outputIndex = -1;
+    input = nullptr;
 }
 
 void Wire::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -137,11 +138,20 @@ void Wire::updateAllWires()
 {
     for (auto &wire : wires)
     {
-        if (!(wire->source && wire->destination))
+        if (!((wire->source || wire->input) && wire->destination))
             continue;
 
-        wire->source->update();
-        wire->state = (wire->source->oPins[wire->outputIndex]).getState();
+        if (wire->source)
+        {
+            wire->source->update();
+            wire->state = (wire->source->oPins[wire->outputIndex]).getState();
+        }
+
+        else if (wire->input)
+        {
+            wire->state = (wire->input)->pin.getState();
+        }
+
         (wire->destination->iPins[wire->inputIndex]).setState(wire->state);
         wire->updateColor();
         wire->destination->update();
@@ -153,6 +163,7 @@ Wire::~Wire()
     if (destination)
     {
         destination->iPins[inputIndex].setState(false);
+        input = nullptr;
     }
     std::cout << "deletd wire" << std::endl;
 }
@@ -183,6 +194,10 @@ void Wire::updatePosition()
     if (source && outputIndex >= 0)
     {
         updatePath(sim::snapToGrid((source->oPins[outputIndex]).getPosition()), 0);
+    }
+    else if (input)
+    {
+        updatePath(sim::snapToGrid((input->pin).getPosition()), 0);
     }
     if (destination && inputIndex >= 0)
     {

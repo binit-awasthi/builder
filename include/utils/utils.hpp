@@ -44,11 +44,13 @@ namespace style
     enum class color
     {
         gate,
+        slider,
+        container,
         window,
         low,
         high,
-        selected
-
+        selected,
+        track
     };
 }
 

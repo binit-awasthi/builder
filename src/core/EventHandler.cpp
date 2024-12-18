@@ -77,11 +77,48 @@ void EventHandler::handleLeftMousePress(const sf::Vector2f &mousePos, const sf::
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
     {
-        Node::addNode(std::make_unique<Node>(Node::Operation::NOR, snappedPos));
+        Node::addNode(std::make_unique<Node>(Node::Operation::NAND, snappedPos));
         selectedNode = Node::nodes.back().get();
-        nodeInitialPosition = mousePos;
+        initialPos = mousePos;
         return;
     }
+
+    //
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt))
+    {
+        selectedInputs.clear();
+        Input::addInput(std::make_unique<Input>(snappedPos));
+        selectedInputs.push_back(Input::inputs.back().get());
+        initialPos = mousePos;
+        return;
+    }
+
+    for (const auto &input : Input::inputs)
+    {
+        if ((input->pin).contains(mousePos))
+        {
+            wire->addPoint(start);
+            wire->input = input.get();
+            return;
+        }
+    }
+
+    for (const auto &input : Input::inputs)
+    {
+        if (input->contains(mousePos))
+        {
+            selectedInputs.push_back(input.get());
+            initialPos = mousePos;
+        }
+
+        if (input->indicator.getGlobalBounds().contains(mousePos))
+        {
+            input->indicatorOnClick();
+            return;
+        }
+    }
+
+    //
 
     if (checkHoverOutput(mousePos))
         return;
@@ -92,6 +129,7 @@ void EventHandler::handleLeftMousePress(const sf::Vector2f &mousePos, const sf::
         this->wire->addPoint(start);
         this->wire->source = hoveredWire->source;
         this->wire->outputIndex = hoveredWire->outputIndex;
+        this->wire->input = hoveredWire->input;
         return;
     }
 
@@ -104,15 +142,18 @@ void EventHandler::handleRightMousePress(const sf::Vector2f &mousePos)
         return;
     if (Node::deleteHovered(mousePos))
         return;
+    if (Input::deleteHovered(mousePos))
+        return;
 }
 
 void EventHandler::handleMouseReleaseEvents(const sf::Event &event)
 {
     if (event.mouseButton.button == sf::Mouse::Left)
     {
+        isDragging = false;
+
         sf::Vector2f mousePos = sim::getMousePos(window);
         auto snappedPos = sim::snapToGrid(static_cast<sf::Vector2i>(mousePos));
-        isDragging = false;
 
         if (selectedNode)
         {
@@ -122,6 +163,15 @@ void EventHandler::handleMouseReleaseEvents(const sf::Event &event)
         }
 
         checkHoverInput(snappedPos);
+
+        //
+        for (const auto &input : selectedInputs)
+            if (input)
+            {
+                input->setPosition(sim::snapToGrid(static_cast<sf::Vector2i>(input->getPosition())));
+            }
+        selectedInputs.clear();
+        //
     }
 }
 
@@ -148,7 +198,7 @@ bool EventHandler::checkHoverOutput(const sf::Vector2f &pos)
         if (node->contains(pos))
         {
             selectedNode = node.get();
-            nodeInitialPosition = pos;
+            initialPos = pos;
             return true;
         }
     }
@@ -157,20 +207,34 @@ bool EventHandler::checkHoverOutput(const sf::Vector2f &pos)
 
 void EventHandler::moveSelected()
 {
+    auto mousePos = sim::getMousePos(window);
+    auto delta = mousePos - initialPos;
+    initialPos = mousePos;
+
     if (selectedNode)
     {
-        auto mousePos = sim::getMousePos(window);
-        auto delta = mousePos - nodeInitialPosition;
-        nodeInitialPosition = mousePos;
-
         selectedNode->move(delta);
 
         for (auto &wire : Wire::wires)
         {
-            if (wire->source.get() == selectedNode || wire->destination.get() == selectedNode)
+            if ((wire->source.get() == selectedNode) || wire->destination.get() == selectedNode)
                 wire->updatePosition();
         }
     }
+
+    //
+    for (const auto &input : selectedInputs)
+        if (input)
+        {
+            input->move(delta);
+
+            for (auto &wire : Wire::wires)
+            {
+                if (wire->input == input)
+                    wire->updatePosition();
+            }
+        }
+    //
 }
 
 void EventHandler::checkHoverInput(const sf::Vector2i &snappedPos)
@@ -187,7 +251,7 @@ void EventHandler::checkHoverInput(const sf::Vector2i &snappedPos)
                     wire->destination = node;
                     wire->inputIndex = i;
 
-                    if (wire->outputIndex != -1 && wire->inputIndex != -1)
+                    if ((wire->outputIndex != -1 || wire->input) && wire->inputIndex != -1)
                     {
                         Wire *prevWire = node->iPins[wire->inputIndex].wire;
                         if (prevWire)

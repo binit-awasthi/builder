@@ -10,7 +10,7 @@
 #include <cmath>
 #include "utils/utils.hpp"
 #include "components/Pin.hpp"
-#include "components/button.hpp"
+#include "components/Button.hpp"
 
 class Node : public sf::Drawable
 {

@@ -4,7 +4,7 @@
 #include <vector>
 #include <functional>
 #include <cmath>
-#include <components/button.hpp>
+#include <components/Button.hpp>
 #include <SFML/Graphics.hpp>
 #include <utils/utils.hpp>
 

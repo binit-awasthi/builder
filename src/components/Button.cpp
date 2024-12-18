@@ -1,4 +1,4 @@
-#include "components/button.hpp"
+#include "components/Button.hpp"
 
 Button::Button(sf::Vector2i size, float cornerRdius, sf::Color color)
 {

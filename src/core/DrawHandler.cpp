@@ -10,6 +10,16 @@ void DrawHandler::draw(sf::RenderWindow &window)
         window.draw(*item);
     }
 
+    for (const auto &item : Input::inputs)
+    {
+        window.draw(*item);
+    }
+
+    for (const auto &item : Output::outputs)
+    {
+        window.draw(*item);
+    }
+
     if (EventHandler::wire)
     {
         window.draw(*EventHandler::wire);

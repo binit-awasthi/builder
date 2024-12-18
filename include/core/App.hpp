@@ -6,7 +6,7 @@
 #include "core/DrawHandler.hpp"
 #include "utils/utils.hpp"
 #include <memory>
-#include "components/sideBar.hpp"
+#include "components/SideBar.hpp"
 
 class App
 {

@@ -78,14 +78,23 @@ sf::Color getColor(style::color color)
     {
     case style::color::gate:
         return sf::Color(247, 44, 91);
+    case style::color::container:
+        return sf::Color(119, 111, 111);
+    case style::color::slider:
+        return sf::Color(71, 67, 67);
+        // return sf::Color(53, 50, 50);
     case style::color::low:
         return sf::Color(98, 94, 94);
     case style::color::high:
         return sf::Color(230, 233, 234);
+    case style::color::track:
+        return sf::Color(207, 207, 193);
+        // return sf::Color(217, 217, 217);
     case style::color::selected:
         return sf::Color(12, 140, 233);
     case style::color::window:
-        return sf::Color(18, 20, 20, 255);
+        return sf::Color(30, 30, 30);
+        // return sf::Color(18, 20, 20, 255);
 
     default:
         return sf::Color::White;

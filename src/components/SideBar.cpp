@@ -1,4 +1,4 @@
-#include "components/sideBar.hpp"
+#include "components/SideBar.hpp"
 
 Sidebar::Sidebar(float width, float height, const std::vector<std::string> &buttonLabels)
 {
@@ -69,4 +69,3 @@ void Sidebar::setButtonCallback(size_t index, std::function<void()> callback)
         buttons[index].onClick = callback;
     }
 }
-

@@ -8,6 +8,8 @@
 #include "components/Wire.hpp"
 #include "components/Node.hpp"
 #include "components/Pin.hpp"
+#include "components/Input.hpp"
+#include "components/Output.hpp"
 
 class EventHandler
 {
@@ -23,11 +25,17 @@ class EventHandler
     void handleLeftMousePress(const sf::Vector2f &mousePos, const sf::Vector2i &snappedPos);
     void handleRightMousePress(const sf::Vector2f &mousePos);
     bool checkHoverOutput(const sf::Vector2f &);
+    //
+    std::vector<Node *> selectedNodes;
+    std::vector<Wire *> selectedWires;
+    std::vector<Pin *> selectedPins;
+    std::vector<Output *> selectedOutputs;
+    std::vector<Input *> selectedInputs;
 
 public:
     bool isDragging;
     Node *selectedNode;
-    sf::Vector2f nodeInitialPosition;
+    sf::Vector2f initialPos;
 
     static std::unique_ptr<Wire> wire;
 

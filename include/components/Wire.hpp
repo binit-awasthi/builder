@@ -8,6 +8,7 @@
 #include <memory>
 #include <cmath>
 #include "components/Node.hpp"
+#include "components/Input.hpp"
 
 class Wire : public sf::Drawable
 {
@@ -26,6 +27,7 @@ public:
     bool state;
     int inputIndex;
     int outputIndex;
+    Input *input;
 
     std::shared_ptr<Node> source;
     std::shared_ptr<Node> destination;

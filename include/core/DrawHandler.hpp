@@ -5,19 +5,16 @@
 #include <vector>
 #include <memory>
 #include "components/Wire.hpp"
-#include "components/button.hpp"
+#include "components/Button.hpp"
+#include "components/Input.hpp"
+#include "components/Output.hpp"
 #include "core/EventHandler.hpp"
 
 class DrawHandler
 {
-private:
-    int count;
-
 public:
     void draw(sf::RenderWindow &);
     static std::vector<std::shared_ptr<sf::Drawable>> itemsToDraw;
-    // static std::shared_ptr<sf::Drawable> itemToDraw ;
-    //
 };
 
 #endif

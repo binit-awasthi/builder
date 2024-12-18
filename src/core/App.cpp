@@ -3,8 +3,8 @@
 App::App()
 {
     settings.antialiasingLevel = 8;
-    window = std::make_unique<sf::RenderWindow>(sf::VideoMode::getDesktopMode(), "builder", sf::Style::Fullscreen, settings);
-    // window = std::make_unique<sf::RenderWindow>(sf::VideoMode(500, 500), "builder", sf::Style::None, settings);
+    // window = std::make_unique<sf::RenderWindow>(sf::VideoMode::getDesktopMode(), "builder", sf::Style::Fullscreen, settings);
+    window = std::make_unique<sf::RenderWindow>(sf::VideoMode(500, 500), "builder", sf::Style::None, settings);
     window->setFramerateLimit(60);
     loadAssets();
 }
