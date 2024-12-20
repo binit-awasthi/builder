@@ -14,10 +14,8 @@ Pin::Pin(bool state) : state(state)
 void Pin::setState(bool state)
 {
     this->state = state;
-    if (state)
-        shape.setFillColor(getColor(style::color::high));
-    else
-        shape.setFillColor(getColor(style::color::low));
+    shape.setFillColor(getColor(
+        state ? style::color::high : style::color::low));
 }
 
 bool Pin::getState()

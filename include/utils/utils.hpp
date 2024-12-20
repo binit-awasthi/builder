@@ -50,7 +50,8 @@ namespace style
         low,
         high,
         selected,
-        track
+        track,
+        testWire
     };
 }
 

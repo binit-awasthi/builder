@@ -6,26 +6,29 @@
 #include "utils/utils.hpp"
 #include <memory>
 
+class Wire;
+
 class Input : public Indicator
 {
-    sf::ConvexShape track;
 
     float trackWidth = 6.f;
     float sliderRadius = 5.f;
     sf::FloatRect trackBounds;
 
 public:
-    static std::vector<std::unique_ptr<Input>> inputs;
+    Input(sf::Vector2i pos = {100, 100});
+
+    static std::vector<std::shared_ptr<Input>> inputs;
+    static bool deleteHovered(const sf::Vector2f &pos);
+
+    static void addInput(std::shared_ptr<Input>);
 
     Pin pin;
+    sf::ConvexShape track;
     sf::CircleShape slider;
-    Input(sf::Vector2i pos = {100, 100});
     void setPosition(const sf::Vector2i &pos = {100, 100});
     void draw(sf::RenderTarget &, sf::RenderStates) const override;
     void move(sf::Vector2f &);
     sf::Vector2f getPosition();
     void indicatorOnClick();
-
-    static void addInput(std::unique_ptr<Input>);
-    static bool deleteHovered(const sf::Vector2f &pos);
 };

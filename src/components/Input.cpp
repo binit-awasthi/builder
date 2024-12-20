@@ -1,6 +1,7 @@
 #include "components/Input.hpp"
+#include "components/Wire.hpp"
 
-std::vector<std::unique_ptr<Input>> Input::inputs;
+std::vector<std::shared_ptr<Input>> Input::inputs;
 
 Input::Input(sf::Vector2i pos)
 {
@@ -33,12 +34,20 @@ void Input::setPosition(const sf::Vector2i &pos)
     track.setPosition(containerPos.x - containerBounds.width / 2 + trackBounds.width / 2, containerPos.y);
 
     sf::Vector2f trackPos = track.getPosition();
-    slider.setPosition(trackPos.x, trackPos.y - trackBounds.height / 2);
+
+    slider.setPosition(
+        trackPos.x,
+        (pin.getState()) ? trackPos.y - trackBounds.height / 2
+                         : trackPos.y + trackBounds.height / 2
+
+    );
+
+    // slider.setPosition(trackPos.x, trackPos.y - trackBounds.height / 2);
 
     pin.shape.setPosition(containerPos.x + containerBounds.width / 2, containerPos.y);
 }
 
-void Input::addInput(std::unique_ptr<Input> input)
+void Input::addInput(std::shared_ptr<Input> input)
 {
     inputs.push_back(std::move(input));
 }
@@ -59,10 +68,13 @@ sf::Vector2f Input::getPosition()
 
 void Input::indicatorOnClick()
 {
-    pin.setState(!pin.getState());
+    bool newState = !pin.getState();
+    pin.setState(newState);
     indicator.setFillColor(
         getColor(
-            (pin.getState()) ? style::color::high : style::color::low));
+            (newState) ? style::color::high
+
+                       : style::color::low));
 }
 
 bool Input::deleteHovered(const sf::Vector2f &pos)

@@ -82,16 +82,16 @@ sf::Color getColor(style::color color)
         return sf::Color(119, 111, 111);
     case style::color::slider:
         return sf::Color(71, 67, 67);
-        // return sf::Color(53, 50, 50);
     case style::color::low:
         return sf::Color(98, 94, 94);
     case style::color::high:
         return sf::Color(230, 233, 234);
     case style::color::track:
-        return sf::Color(207, 207, 193);
-        // return sf::Color(217, 217, 217);
+        return sf::Color(178, 201, 173);
     case style::color::selected:
-        return sf::Color(12, 140, 233);
+        return sf::Color(229, 217, 242);
+    case style::color::testWire:
+        return sf::Color(154, 166, 178);
     case style::color::window:
         return sf::Color(30, 30, 30);
         // return sf::Color(18, 20, 20, 255);

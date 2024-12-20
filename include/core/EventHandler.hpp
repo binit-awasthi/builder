@@ -2,6 +2,7 @@
 #define EVENTHANDLER_HPP
 
 #include <iostream>
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include "utils/utils.hpp"
 #include "core/DrawHandler.hpp"
@@ -13,35 +14,39 @@
 
 class EventHandler
 {
+private:
     sf::RenderWindow &window;
     sf::Vector2i start;
+
+    sf::Vector2f initialPos;
+
+    std::vector<std::shared_ptr<Node>> selectedNodes;
+    std::vector<std::shared_ptr<Wire>> selectedWires;
+    std::vector<std::shared_ptr<Pin>> selectedPins;
+    std::vector<std::shared_ptr<Output>> selectedOutputs;
+    std::vector<std::shared_ptr<Input>> selectedInputs;
 
     void handleKeyPressEvents(const sf::Event &);
     void handleMouseMoveEvents(const sf::Event &);
     void handleMousePressEvents(const sf::Event &);
     void handleMouseReleaseEvents(const sf::Event &);
-    void moveSelected();
-    void checkHoverInput(const sf::Vector2i &);
+
     void handleLeftMousePress(const sf::Vector2f &mousePos, const sf::Vector2i &snappedPos);
     void handleRightMousePress(const sf::Vector2f &mousePos);
-    bool checkHoverOutput(const sf::Vector2f &);
-    //
-    std::vector<Node *> selectedNodes;
-    std::vector<Wire *> selectedWires;
-    std::vector<Pin *> selectedPins;
-    std::vector<Output *> selectedOutputs;
-    std::vector<Input *> selectedInputs;
+
+    void checkHoverInput(const sf::Vector2i &snappedPos);
+    bool checkHoverOutput(const sf::Vector2f &mousePos);
+
+    void moveSelected();
+    void resetSelections();
 
 public:
-    bool isDragging;
+    EventHandler(sf::RenderWindow &window);
+
+    void handleEvents(const sf::Event &event);
+    static std::shared_ptr<Wire> wire;
     Node *selectedNode;
-    sf::Vector2f initialPos;
-
-    static std::unique_ptr<Wire> wire;
-
-    void handleEvents(sf::Event);
-
-    EventHandler(sf::RenderWindow &);
+    bool isDragging;
 };
 
 #endif

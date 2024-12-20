@@ -1,6 +1,6 @@
 #include "components/Wire.hpp"
 
-std::vector<std::unique_ptr<Wire>> Wire::wires;
+std::vector<std::shared_ptr<Wire>> Wire::wires;
 
 Wire::Wire()
 {
@@ -12,6 +12,7 @@ Wire::Wire()
     inputIndex = -1;
     outputIndex = -1;
     input = nullptr;
+    output = nullptr;
 }
 
 void Wire::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -99,7 +100,7 @@ int Wire::getWireCount()
     return wires.size();
 }
 
-void Wire::addWire(std::unique_ptr<Wire> newWire)
+void Wire::addWire(std::shared_ptr<Wire> newWire)
 {
     wires.emplace_back(std::move(newWire));
 }
@@ -127,10 +128,10 @@ void Wire::addWireToPath()
         sf::Vector2f p3 = endPos - offset;
         sf::Vector2f p4 = endPos + offset;
 
-        wire.append(sf::Vertex(p1, getColor(style::color::selected)));
-        wire.append(sf::Vertex(p2, getColor(style::color::selected)));
-        wire.append(sf::Vertex(p3, getColor(style::color::selected)));
-        wire.append(sf::Vertex(p4, getColor(style::color::selected)));
+        wire.append(sf::Vertex(p1, getColor(style::color::testWire)));
+        wire.append(sf::Vertex(p2, getColor(style::color::testWire)));
+        wire.append(sf::Vertex(p3, getColor(style::color::testWire)));
+        wire.append(sf::Vertex(p4, getColor(style::color::testWire)));
     }
 }
 
@@ -138,23 +139,46 @@ void Wire::updateAllWires()
 {
     for (auto &wire : wires)
     {
-        if (!((wire->source || wire->input) && wire->destination))
+        if (!((wire->source || wire->input) && (wire->destination || wire->output)))
             continue;
 
         if (wire->source)
         {
-            wire->source->update();
-            wire->state = (wire->source->oPins[wire->outputIndex]).getState();
+            if (wire->outputIndex >= 0 && wire->outputIndex < wire->source->oPins.size())
+            {
+                wire->source->update();
+                wire->state = (wire->source->oPins[wire->outputIndex]).getState();
+            }
+            else
+            {
+                std::cerr << "Invalid outputIndex for wire source" << std::endl;
+                continue;
+            }
         }
-
         else if (wire->input)
         {
             wire->state = (wire->input)->pin.getState();
         }
 
-        (wire->destination->iPins[wire->inputIndex]).setState(wire->state);
+        if (wire->destination)
+        {
+            if (wire->inputIndex >= 0 && wire->inputIndex < wire->destination->iPins.size())
+            {
+                (wire->destination->iPins[wire->inputIndex]).setState(wire->state);
+                wire->destination->update();
+            }
+            else
+            {
+                std::cerr << "Invalid inputIndex for wire destination" << std::endl;
+                continue;
+            }
+        }
+        else if (wire->output)
+        {
+            wire->output->setState(wire->state);
+        }
+
         wire->updateColor();
-        wire->destination->update();
     }
 }
 
@@ -163,9 +187,12 @@ Wire::~Wire()
     if (destination)
     {
         destination->iPins[inputIndex].setState(false);
-        input = nullptr;
     }
-    std::cout << "deletd wire" << std::endl;
+    else if (output)
+    {
+        output->setState(false);
+    }
+    std::cout << "deleted wire" << std::endl;
 }
 
 bool Wire::contains(sf::Vector2f pos)
@@ -192,17 +219,13 @@ void Wire::updateColor()
 void Wire::updatePosition()
 {
     if (source && outputIndex >= 0)
-    {
         updatePath(sim::snapToGrid((source->oPins[outputIndex]).getPosition()), 0);
-    }
     else if (input)
-    {
         updatePath(sim::snapToGrid((input->pin).getPosition()), 0);
-    }
     if (destination && inputIndex >= 0)
-    {
         updatePath(sim::snapToGrid((destination->iPins[inputIndex]).getPosition()));
-    }
+    else if (output)
+        updatePath(sim::snapToGrid((output->pin).getPosition()));
 }
 
 bool Wire::deleteHovered(const sf::Vector2f &pos)
@@ -230,14 +253,7 @@ Wire *Wire::checkHovered(const sf::Vector2f &pos)
     return nullptr;
 }
 
-void Wire::deleteWire(Wire *wireToDelete)
+void Wire::removeWire(const std::shared_ptr<Wire> &oldWire)
 {
-    for (auto it = wires.begin(); it != wires.end(); ++it)
-    {
-        if (it->get() == wireToDelete)
-        {
-            wires.erase(it);
-            return;
-        }
-    }
+    wires.erase(std::remove(wires.begin(), wires.end(), oldWire), wires.end());
 }

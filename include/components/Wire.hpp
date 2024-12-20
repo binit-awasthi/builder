@@ -9,6 +9,7 @@
 #include <cmath>
 #include "components/Node.hpp"
 #include "components/Input.hpp"
+#include "components/Output.hpp"
 
 class Wire : public sf::Drawable
 {
@@ -27,19 +28,20 @@ public:
     bool state;
     int inputIndex;
     int outputIndex;
-    Input *input;
+    std::shared_ptr<Input> input;
+    std::shared_ptr<Output> output;
 
     std::shared_ptr<Node> source;
     std::shared_ptr<Node> destination;
 
-    static std::vector<std::unique_ptr<Wire>> wires;
-    static void deleteWire(Wire *);
+    static std::vector<std::shared_ptr<Wire>> wires;
     static void deleteWires();
     static int getWireCount();
-    static void addWire(std::unique_ptr<Wire>);
+    static void addWire(std::shared_ptr<Wire>);
     static bool deleteHovered(const sf::Vector2f &);
     static Wire *checkHovered(const sf::Vector2f &);
 
+    static void removeWire(const std::shared_ptr<Wire> &oldWire);
     void addPoint(sf::Vector2i newPoint, int endSpecifier = 1);
     void updatePath(const sf::Vector2i &mouseGridPos, int endSpecifier = 1);
     void updateColor();

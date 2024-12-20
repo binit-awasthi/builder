@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "utils/utils.hpp"
+#include <memory>
 
 class Wire;
 
@@ -13,8 +14,8 @@ class Pin : public sf::Drawable
 
 public:
     sf::CircleShape shape;
-    Wire *wire;
-    
+    std::shared_ptr<Wire> wire;
+
     void setState(bool state);
     void draw(sf::RenderTarget &, sf::RenderStates) const override;
     bool getState();
