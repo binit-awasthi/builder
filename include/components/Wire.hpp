@@ -31,8 +31,8 @@ public:
     std::shared_ptr<Input> input;
     std::shared_ptr<Output> output;
 
-    std::shared_ptr<Node> source;
-    std::shared_ptr<Node> destination;
+    std::weak_ptr<Node> source;
+    std::weak_ptr<Node> destination;
 
     static std::vector<std::shared_ptr<Wire>> wires;
     static void deleteWires();

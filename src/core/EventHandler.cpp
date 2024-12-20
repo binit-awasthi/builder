@@ -265,7 +265,7 @@ void EventHandler::moveSelected()
 
         for (auto &wire : Wire::wires)
         {
-            if (wire->source.get() == selectedNode || wire->destination.get() == selectedNode)
+            if (wire->source.lock().get() == selectedNode || wire->destination.lock().get() == selectedNode)
                 wire->updatePosition();
         }
     }

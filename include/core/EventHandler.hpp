@@ -20,7 +20,7 @@ private:
 
     sf::Vector2f initialPos;
 
-    std::vector<std::shared_ptr<Node>> selectedNodes;
+    std::vector<std::weak_ptr<Node>> selectedNodes;
     std::vector<std::shared_ptr<Wire>> selectedWires;
     std::vector<std::shared_ptr<Pin>> selectedPins;
     std::vector<std::shared_ptr<Output>> selectedOutputs;

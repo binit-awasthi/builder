@@ -139,15 +139,15 @@ void Wire::updateAllWires()
 {
     for (auto &wire : wires)
     {
-        if (!((wire->source || wire->input) && (wire->destination || wire->output)))
+        if (!((wire->source.lock() || wire->input) && (wire->destination.lock() || wire->output)))
             continue;
 
-        if (wire->source)
+        if (auto src = wire->source.lock())
         {
-            if (wire->outputIndex >= 0 && wire->outputIndex < wire->source->oPins.size())
+            if (wire->outputIndex >= 0 && wire->outputIndex < src->oPins.size())
             {
-                wire->source->update();
-                wire->state = (wire->source->oPins[wire->outputIndex]).getState();
+                src->update();
+                wire->state = (src->oPins[wire->outputIndex]).getState();
             }
             else
             {
@@ -160,12 +160,12 @@ void Wire::updateAllWires()
             wire->state = (wire->input)->pin.getState();
         }
 
-        if (wire->destination)
+        if (auto dst = wire->destination.lock())
         {
-            if (wire->inputIndex >= 0 && wire->inputIndex < wire->destination->iPins.size())
+            if (wire->inputIndex >= 0 && wire->inputIndex < dst->iPins.size())
             {
-                (wire->destination->iPins[wire->inputIndex]).setState(wire->state);
-                wire->destination->update();
+                (dst->iPins[wire->inputIndex]).setState(wire->state);
+                dst->update();
             }
             else
             {
@@ -184,9 +184,9 @@ void Wire::updateAllWires()
 
 Wire::~Wire()
 {
-    if (destination)
+    if (auto dst = destination.lock())
     {
-        destination->iPins[inputIndex].setState(false);
+        dst->iPins[inputIndex].setState(false);
     }
     else if (output)
     {
@@ -218,12 +218,13 @@ void Wire::updateColor()
 
 void Wire::updatePosition()
 {
-    if (source && outputIndex >= 0)
-        updatePath(sim::snapToGrid((source->oPins[outputIndex]).getPosition()), 0);
+    if (source.lock() && outputIndex >= 0)
+
+        updatePath(sim::snapToGrid((source.lock()->oPins[outputIndex]).getPosition()), 0);
     else if (input)
         updatePath(sim::snapToGrid((input->pin).getPosition()), 0);
-    if (destination && inputIndex >= 0)
-        updatePath(sim::snapToGrid((destination->iPins[inputIndex]).getPosition()));
+    if (destination.lock() && inputIndex >= 0)
+        updatePath(sim::snapToGrid((destination.lock()->iPins[inputIndex]).getPosition()));
     else if (output)
         updatePath(sim::snapToGrid((output->pin).getPosition()));
 }

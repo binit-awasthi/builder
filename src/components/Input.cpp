@@ -42,8 +42,6 @@ void Input::setPosition(const sf::Vector2i &pos)
 
     );
 
-    // slider.setPosition(trackPos.x, trackPos.y - trackBounds.height / 2);
-
     pin.shape.setPosition(containerPos.x + containerBounds.width / 2, containerPos.y);
 }
 
